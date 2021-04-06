@@ -2,6 +2,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #define META_SIZE sizeof(struct block_meta)
 void *global_base = NULL;
@@ -26,7 +27,6 @@ struct block_meta *request_space(struct block_meta *last, size_t size) {
     struct block_meta *block;
     block = sbrk(0);
     void *request = sbrk(size + META_SIZE);
-    assert((void*)block == request);
     if (request == (void*) -1) {
         return NULL; // whenever sbrk fails to allocate space
     }
@@ -45,7 +45,6 @@ struct block_meta *request_space(struct block_meta *last, size_t size) {
 
 void *malloc(size_t size) {
     struct block_meta *block;
-    // TODO: align size?
     
     if (size <= 0) {
         return NULL;
@@ -84,8 +83,6 @@ void free(void *ptr) {
     }
 
     struct block_meta* block_ptr = get_block_ptr(ptr);
-    assert(block_ptr->free == 0);
-    assert(block_ptr->magic == 0x77777777 || block_ptr->magic == 0x12345678);
     block_ptr->free = 1;
     block_ptr->magic = 0x55555555;
 }
@@ -121,5 +118,16 @@ void *calloc(size_t nelem, size_t elsize) {
 }
 
 int main(void) {
-	return 0;
+	char* c = (char*) malloc(4 * sizeof(char));
+    if (!c) {
+        printf("error allocating space");
+    }
+    else {
+        *c = 'a';
+        *(c+1) = 'b';
+        *(c+2) = 'c';
+        *(c+3) = 0;
+        printf("%s \n", c);
+    }
+    return 0;
 }
