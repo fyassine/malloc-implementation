@@ -11,7 +11,6 @@ struct block_meta {
     size_t size;
     struct block_meta *next;
     int free;
-    int magic; //used only for debugging
 };
 
 struct block_meta *find_free_blocks(struct block_meta **last, size_t size) {
@@ -38,7 +37,6 @@ struct block_meta *request_space(struct block_meta *last, size_t size) {
     block->size = size;
     block->next = NULL;
     block->free = 0;
-    block->magic = 0x12345678;
     
     return block;
 }
@@ -66,7 +64,6 @@ void *malloc(size_t size) {
             }
         } else { // found free block
             block->free = 0;
-            block->magic = 0x77777777;
         }
     }
 
@@ -84,7 +81,6 @@ void free(void *ptr) {
 
     struct block_meta* block_ptr = get_block_ptr(ptr);
     block_ptr->free = 1;
-    block_ptr->magic = 0x55555555;
 }
 
 void *realloc(void *ptr, size_t size) {
