@@ -1,4 +1,8 @@
-malloc-implementation
+A malloc implementation using system call sbrk
 
-to compile use the following:
+Feel free to edit the main function.
+
+To compile use the following:
 gcc -O0 -g -W -Wall -Wextra malloc.c -o malloc.o
+To run use the following:
+./malloc.o
